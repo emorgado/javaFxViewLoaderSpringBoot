@@ -1,0 +1,10 @@
+logging:
+    level:                
+        org.springframework: ERROR
+        br.com.emorgado: DEBUG
+        # org.springframework.security: DEBUG
+
+spring:
+    output:
+        ansi:
+            enabled: ALWAYS

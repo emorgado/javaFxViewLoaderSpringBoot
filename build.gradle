@@ -1,0 +1,64 @@
+buildscript {
+    ext {
+		springBootVersion = '1.4.2.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+
+
+def description = 'JavaFx Application with SpringBoot and a simple view loader'
+def vendor='emerson.morgado@gmail.com'
+def builNumber = System.getenv("BUILD_NUMBER") ?: '0-SNAPSHOT'
+version = '1.0.'+builNumber
+
+
+targetCompatibility = '1.8'
+sourceCompatibility = '1.8'
+
+mainClassName = 'br.com.emorgado.JXBootApplication'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+jar {
+	baseName = 'FXBootApp'
+}
+
+repositories {
+	jcenter() // necessary for fontAwesomeFX
+    mavenCentral()
+}
+
+
+dependencies {
+
+    compile 'org.slf4j:slf4j-api'
+    compile 'org.slf4j:jcl-over-slf4j'
+    
+    // https://bintray.com/jerady/maven/FontAwesomeFX/
+    // http://www.jensd.de/wordpress/?p=2476
+	compile 'de.jensd:fontawesomefx-commons:8.12'
+	compile 'de.jensd:fontawesomefx-controls:8.12'
+	compile 'de.jensd:fontawesomefx-fontawesome:4.6.3'
+
+	compile('org.springframework.boot:spring-boot-devtools')
+	compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    //compile("org.springframework.boot:spring-boot-starter-security")
+
+    // Declare the dependency for your favourite test framework you want to use in your tests.
+    // TestNG is also supported by the Gradle Test task. Just change the
+    // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
+    // 'test.useTestNG()' to your build script.
+    testCompile 'junit:junit:4.12'
+}

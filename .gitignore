@@ -1,0 +1,6 @@
+# BUILD FILES
+bin
+build
+
+# Temporary Files
+.commit-message.txt
