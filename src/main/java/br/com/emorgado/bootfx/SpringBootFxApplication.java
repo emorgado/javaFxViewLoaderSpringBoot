@@ -9,13 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 import javafx.application.Application;
+import javafx.application.Preloader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-
+@ComponentScan({"br.com.emorgado.bootfx"})
 public abstract class SpringBootFxApplication 
                             extends Application {
     
@@ -62,6 +64,8 @@ public abstract class SpringBootFxApplication
         
         primaryStage.setScene( primaryScene );
         
+        primaryStage.setTitle( viewLoader.getResourceBundleString("app.title") );
+        
         primaryStage.show();
     }   
     
@@ -83,17 +87,32 @@ public abstract class SpringBootFxApplication
         
     }
 
-    protected static void launchApp(Class<? extends SpringBootFxApplication> clazz, Class mainControllerClass, String[] args) {
+    protected static void launchApp( final Class<? extends SpringBootFxApplication> clazz, 
+            final Class mainControllerClass,            
+            final String[] args ) {
+            launchApp(clazz, mainControllerClass, null, args);
+    
+    }
+    
+    protected static void launchApp( final Class<? extends SpringBootFxApplication> applicationClass, 
+                                     final Class mainControllerClass, 
+                                     final Class<? extends Preloader> preloaderClass,
+                                     final String[] args ) {
         
-        log.info("Launching class "+clazz);
-        log.debug("MainControllerClass "+mainControllerClass);
-        log.debug("Arguments "+args);
+        log.info("     Launching class: "+applicationClass);
+        log.debug(" MainControllerClass: "+mainControllerClass);
+        log.debug("      PreloaderClass: "+preloaderClass);
+        log.debug("           Arguments: "+args);
         
         SpringBootFxApplication.mainControllerClass = mainControllerClass;
         
         SpringBootFxApplication.savedArgs = args;
         
-        Application.launch(clazz, args);
+//        if( preloaderClass != null ){
+//            Application.launchApplicationWithArgs(applicationClass, preloaderClass, args);
+//        } else {
+            Application.launch(applicationClass, args);
+//        }
     }
 
 }

@@ -3,4 +3,5 @@ bin
 build
 
 # Temporary Files
-.commit-message.txt
+commit-message.txt
+/.gradle/

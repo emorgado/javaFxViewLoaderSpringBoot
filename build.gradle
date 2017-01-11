@@ -10,14 +10,17 @@ buildscript {
 	}
 }
 
+apply plugin: 'maven'
 apply plugin: 'eclipse'
 apply plugin: 'java'
-apply plugin: 'application'
 apply plugin: 'org.springframework.boot'
 
 
-def description = 'JavaFx Application with SpringBoot and a simple view loader'
-def vendor='emerson.morgado@gmail.com'
+def description = 'JavaFx view loader library to easing the integration with SpringBoot'
+def implementationTitle = "bootfx"
+def author = 'Emerson Jose Morgado Brito'
+def contactMail = "emerson.morgado@gmail.com"
+
 def builNumber = System.getenv("BUILD_NUMBER") ?: '0-SNAPSHOT'
 version = '1.0.'+builNumber
 
@@ -25,12 +28,10 @@ version = '1.0.'+builNumber
 targetCompatibility = '1.8'
 sourceCompatibility = '1.8'
 
-mainClassName = 'br.com.emorgado.JXBootApplication'
-
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 jar {
-	baseName = 'FXBootApp'
+	baseName = 'bootfx'
 }
 
 repositories {
@@ -50,15 +51,43 @@ dependencies {
 	compile 'de.jensd:fontawesomefx-controls:8.12'
 	compile 'de.jensd:fontawesomefx-fontawesome:4.6.3'
 
-	compile('org.springframework.boot:spring-boot-devtools')
-	compile("org.springframework.boot:spring-boot-starter-web") {
-        exclude module: "spring-boot-starter-tomcat"
-    }
-    //compile("org.springframework.boot:spring-boot-starter-security")
-
-    // Declare the dependency for your favourite test framework you want to use in your tests.
-    // TestNG is also supported by the Gradle Test task. Just change the
-    // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
-    // 'test.useTestNG()' to your build script.
+	compile('org.springframework.boot:spring-boot-autoconfigure')
+    
     testCompile 'junit:junit:4.12'
+}
+
+// http://docs.spring.io/autorepo/docs/spring-boot/current/reference/htmlsingle/#build-tool-plugins-gradle-repackage-configuration
+bootRepackage {
+	enabled = false
+}
+
+jar.doFirst {
+    manifest {
+        attributes "Specification-Title"  : name,
+                "Specification-Version": version,
+                "Specification-Vendor" : contactMail,
+                "Implementation-Title" : name,
+                "Implementation-Version" : version,
+                "Implementation-Vendor": contactMail,
+        		'Created-By': author,
+        		'Description': description        		   
+    }
+}
+
+uploadArchives {
+    repositories {
+    	mavenDeployer {
+	    	repository( url: 'http://www.velumsoft.com.br/archiva/repository/internal/' ){
+	    		authentication( userName: 'gradle', password: 'gr4dl3u53r1' )
+	    	}
+
+	    	pom.version = version
+	    	pom.artifactId = 'bootfx'
+	    	pom.groupId = 'br.com.emorgado'
+	    	pom.name = implementationTitle
+	    	pom.withXml {
+		    	asNode().appendNode( 'description', description )
+		    }
+    	}
+    }
 }

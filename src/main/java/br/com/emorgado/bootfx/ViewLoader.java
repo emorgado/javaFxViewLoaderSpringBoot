@@ -45,7 +45,7 @@ public class ViewLoader {
     public ViewLoader(ApplicationContext applicationContext){
         log.info("ViewLoader");
         this.applicationContext = applicationContext;
-    }
+    }    
     
     public Node getView( Class controllerClassName ) throws IOException{
               
@@ -126,6 +126,16 @@ public class ViewLoader {
         
         this.rootNode.setRight( view );
             
+    }
+    
+
+    public String getResourceBundleString(String key){
+        try {
+            return cachedAppResourceBundle.getString(key);
+        } catch(Exception e){
+            log.error(e.getMessage());
+            return key;
+        }
     }
     
     private void checkRootNode() throws Exception{
