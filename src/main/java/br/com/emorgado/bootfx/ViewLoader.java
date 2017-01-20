@@ -6,8 +6,6 @@ package br.com.emorgado.bootfx;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -18,10 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 @Service
@@ -39,6 +38,8 @@ public class ViewLoader {
     
     private ResourceBundle appResourceBundle = null;
     
+    private URL styleUrl = null;
+    
     private BorderPane rootNode;
     
     @Autowired
@@ -47,7 +48,7 @@ public class ViewLoader {
         this.applicationContext = applicationContext;
     }    
     
-    public Node getView( Class controllerClassName ) throws IOException{
+    public Parent getView( Class controllerClassName ) throws IOException{
               
                 
         FXMLLoader loader = new FXMLLoader();
@@ -87,16 +88,16 @@ public class ViewLoader {
         
         loader.load( extractFxmlInputStream( controllerClassName ) );
         
-        Node node = loader.getRoot();
+        Parent node = loader.getRoot();
         
         if( rootNode == null ){
             rootNode = ( BorderPane ) node;
             
             // Only Load main style file
-            URL stylesUrl = getStylesheet( controllerClassName );
-            if( stylesUrl != null ){
-                log.info( "Loading styles "+stylesUrl.toExternalForm() );
-                rootNode.getStylesheets().add( stylesUrl.toExternalForm() );
+            styleUrl = getStylesheet( controllerClassName );
+            if( styleUrl != null ){
+                log.info( "Loading styles "+styleUrl.toExternalForm() );
+                rootNode.getStylesheets().add( styleUrl.toExternalForm() );
             }
         }
         
@@ -107,7 +108,7 @@ public class ViewLoader {
         
         checkRootNode();
         
-        Node view = getView( controllerClassName );
+        Parent view = getView( controllerClassName );
         
         this.rootNode.setCenter( view );
     }
@@ -116,7 +117,7 @@ public class ViewLoader {
         
         checkRootNode();
         
-        Node view = getView( controllerClassName );
+        Parent view = getView( controllerClassName );
         
         this.rootNode.setLeft( view );
             
@@ -126,12 +127,29 @@ public class ViewLoader {
         
         checkRootNode();
         
-        Node view = getView( controllerClassName );
+        Parent view = getView( controllerClassName );
         
         this.rootNode.setRight( view );
             
     }
     
+    public Stage showAsDialog( Class controllerClassName ) throws IOException {
+        
+        Parent page = (Parent) getView( controllerClassName );
+        
+        Stage stage = new Stage();
+        Scene scene = new Scene( page );
+        stage.setScene( scene);
+        
+        log.debug("StyleUrl: "+styleUrl);
+        if( styleUrl != null ){
+            log.info( "Loading styles "+styleUrl.toExternalForm() );            
+            stage.getScene().getStylesheets().add( styleUrl.toExternalForm() );            
+        }
+        
+        
+        return stage;
+    }
     
     /**
      * Used to get i18n Text from application configuration

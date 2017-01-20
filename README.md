@@ -74,7 +74,9 @@ On the resources source folder, create tree directories:
 * *styles* for css files
 
      
-    
+## Load fxml on new dialog
+
+TODO    
     
 # FXML Factories    
     
