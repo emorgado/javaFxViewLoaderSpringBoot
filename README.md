@@ -15,6 +15,7 @@ ResourceBunles must be in the *resources/i18n* directory.
 
 ResourceBundles must have the name of main controller without the controller and first letter lower, example main controller is ApplicationController, so the resource bundle will be called application.properties, for other languages, like Portuguese Brazil, use application_pt_BR.properties
 
+Using viewLoader you can get a resource using the *getResourceBundleString(String value)* method, but the resource must be in the main resource bundle.
 
 # Styles
 
@@ -77,5 +78,21 @@ On the resources source folder, create tree directories:
     
 # FXML Factories    
     
-    
+
+# FAQ
+
+Q: No Root Node Defined! Error:
+A: You may be trying to load a view on init method of main controller, put it into a Platform.runLater expression 
+
+        Platform.runLater(() -> {
+            
+           try {
+               viewLoader.show( AnotherController.class );
+           } catch (Exception e) {
+               log.error( "Error message!" );
+               e.printStackTrace();
+           }
+           
+        });
+ 
     

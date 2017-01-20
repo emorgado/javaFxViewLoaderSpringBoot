@@ -37,12 +37,12 @@ public class ViewLoader {
     
     private final ApplicationContext applicationContext;
     
-    private ResourceBundle cachedAppResourceBundle = null;
+    private ResourceBundle appResourceBundle = null;
     
     private BorderPane rootNode;
     
     @Autowired
-    public ViewLoader(ApplicationContext applicationContext){
+    public ViewLoader( ApplicationContext applicationContext ){
         log.info("ViewLoader");
         this.applicationContext = applicationContext;
     }    
@@ -62,24 +62,26 @@ public class ViewLoader {
             }
         });
         
-        // Load resources if exists.
-        try {
-            
-            loader.setResources( extractBundle( controllerClassName ) );
+        // Load resource bundle only once, me prefered name is mainController name.
+        try {            
             
             // The first bundler will be considered Application Bundler
-            if( cachedAppResourceBundle == null ){
-                cachedAppResourceBundle = loader.getResources();
+            if( appResourceBundle == null ){                
+                
+                appResourceBundle = extractBundle( controllerClassName );
+                
+                if( appResourceBundle != null ){
+                    loader.setResources( appResourceBundle );
+                }
+                
+            } else {
+                loader.setResources( appResourceBundle );
             }
             
         } catch( MissingResourceException e ){            
             
-            log.info("MissingResource "+e.getMessage());
-            
-            // if no specifc bunler, load Application Bundler
-            if( cachedAppResourceBundle != null ){
-                loader.setResources(cachedAppResourceBundle);                
-            }
+            log.error("Error loading ResourceBundle: "+e.getMessage());
+
         }
         
         
@@ -90,12 +92,14 @@ public class ViewLoader {
         if( rootNode == null ){
             rootNode = ( BorderPane ) node;
             
-            URL stylesUrl = getStylesheet(controllerClassName);
+            // Only Load main style file
+            URL stylesUrl = getStylesheet( controllerClassName );
             if( stylesUrl != null ){
                 log.info( "Loading styles "+stylesUrl.toExternalForm() );
                 rootNode.getStylesheets().add( stylesUrl.toExternalForm() );
             }
         }
+        
         return node;
     }
     
@@ -128,10 +132,28 @@ public class ViewLoader {
             
     }
     
-
+    
+    /**
+     * Used to get i18n Text from application configuration
+     * @param key
+     * @return
+     */
+    public String i18n( String key ){
+        try {
+            return appResourceBundle.getString(key);
+        } catch(Exception e){
+            log.error(e.getMessage());
+            return key;
+        }
+    }
+    
+    /** 
+     * @Deprecated
+     * Use i18N instead
+     */    
     public String getResourceBundleString(String key){
         try {
-            return cachedAppResourceBundle.getString(key);
+            return appResourceBundle.getString(key);
         } catch(Exception e){
             log.error(e.getMessage());
             return key;

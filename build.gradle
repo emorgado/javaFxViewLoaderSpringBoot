@@ -35,7 +35,7 @@ jar {
 }
 
 repositories {
-	jcenter() // necessary for fontAwesomeFX
+	jcenter() // for fontAwesomeFX	
     mavenCentral()
 }
 
@@ -73,6 +73,8 @@ jar.doFirst {
         		'Description': description        		   
     }
 }
+
+
 
 uploadArchives {
     repositories {

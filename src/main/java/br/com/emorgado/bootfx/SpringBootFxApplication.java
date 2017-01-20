@@ -1,11 +1,14 @@
 package br.com.emorgado.bootfx;
 
+import java.io.InputStream;
+
 /**
  * @author emerson.morgado@gmail.com
  */
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -14,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -33,8 +37,7 @@ public abstract class SpringBootFxApplication
     
     private Scene primaryScene;
     
-    private ViewLoader viewLoader;
-    
+    private ViewLoader viewLoader;    
     
     @Override
     public void init() throws Exception {
@@ -43,7 +46,7 @@ public abstract class SpringBootFxApplication
         
         applicationContext = SpringApplication.run(getClass(), savedArgs);
         
-        viewLoader = applicationContext.getBean( ViewLoader.class );
+        viewLoader = applicationContext.getBean( ViewLoader.class );        
         
         initApp();
     }
@@ -63,6 +66,17 @@ public abstract class SpringBootFxApplication
         this.primaryScene = new Scene( mainScreen );
         
         primaryStage.setScene( primaryScene );
+        
+        try {
+            InputStream imageStream = getClass().getResourceAsStream("images/icon.png");
+            System.out.println("icon "+imageStream);
+            if( imageStream != null ){
+                
+                primaryStage.getIcons().add( new Image( imageStream ) );                
+            } 
+        } catch ( Exception e ) {
+            log.warn( "Image icon not Found! "+e.getMessage() );
+        }
         
         primaryStage.setTitle( viewLoader.getResourceBundleString("app.title") );
         
